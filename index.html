@@ -92,7 +92,13 @@
             opacity: 1,
             fillOpacity: 0.8
           });
+        },
+        onEachFeature: function(feature, layer) {
+          layer.on('click', function(e) {
+            alert("type: " + feature.properties.TYPE_OF_WA);
+          });
         }
+
       }).addTo(map);
     });
 	      // Add layers to map with control options
