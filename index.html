@@ -25,10 +25,66 @@
       top: 0px;
       bottom: 0;
     }
+            body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            background-color: #007BFF; /* لون أزرق */
+            color: white;
+            padding:40px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            
+        }
+        .header img {
+            max-height: 40px; /* حجم الصورة */
+            margin-right: 100px;
+        }
+         .header h1 {
+            margin: 0;
+        }
+        .content {
+            padding-top: 120px; /* إضافة مساحة كافية أعلى المحتوى لتجنب التداخل مع الهيدر الثابت */
+        }
+    
+</head>
+    <body>
+        <div class="header">
+        <img src="https://www.marefa.org/w/images/thumb/1/16/Birzeit_University_logo.svg/600px-Birzeit_University_logo.svg.png" alt="Birzeit University Logo">
+        <h1>Mapping Emergency Centers in Ramallah city</h1>
+    </div>
+    <div class="content">
+    <!-- Map container -->
+    <div id="map"></div>
+    
   </style>
 </head>
 
 <body>
+
+     <div class="header">
+        <img src="https://www.marefa.org/w/images/thumb/1/16/Birzeit_University_logo.svg/600px-Birzeit_University_logo.svg.png" alt="Birzeit University Logo">
+        <h1>Mapping Emergency Centers in Ramallah city</h1>
+    </div>
+    <div class="content">
+    <!-- Map container -->
+    <div id="map"></div>
+    
+    <!-- North arrow control -->
+    <div class="leaflet-control-northarrow" title="North"></div>
+    
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Categories</h3>
+            <p>Mapping Emergency Centers in Ramallah city</p>
+        </div>
+
   <!-- the map -->
   <div id="map"></div>
 
@@ -61,7 +117,7 @@
     // Create a custom icon for waste containers
     const containerIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',  // Using a green marker as an example
-        shadowUrl: 'https://www.google.com/imgres?q=%D8%B5%D9%88%D8%B1%20%D8%AD%D8%A7%D9%88%D9%8A%D8%A9%20%D9%86%D9%81%D8%A7%D9%8A%D8%A7%D8%AA&imgurl=http%3A%2F%2Falqhat.com%2Fbeta%2Fwp-content%2Fuploads%2F2021%2F10%2F12B0B222-21B5-42C4-BFE7-E9BFB96A5EDC.jpeg&imgrefurl=https%3A%2F%2Falqhat.com%2Fbeta%2Farchives%2F347828&docid=R886YIakNFvOUM&tbnid=DkVmciZGHAtTeM&vet=12ahUKEwjAmIOl08iJAxVz3QIHHZieGJwQM3oECFYQAA..i&w=1280&h=960&hcb=2&ved=2ahUKEwjAmIOl08iJAxVz3QIHHZieGJwQM3oECFYQAA',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
         iconSize: [25, 41],  // Standard Leaflet marker size
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
@@ -82,10 +138,10 @@
             weight: 1.0,
             opacity: 0.7
           };
-         },
+        },
         onEachFeature: function(feature, layer) {
           layer.on('click', function(e) {
-             alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
+            alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
           });
         }
       }).addTo(zonesLayer);  // Add to zonesLayer instead of map directly
@@ -93,35 +149,26 @@
 
     $.getJSON("wasteContainer.json", function(WC) {
       L.geoJson(WC, {
-        pointToLayer: function(feature, latlng) {
-          return L.marker(latlng, {
-            icon: containerIcon  // Use the custom icon instead of circleMarker
-          });
+        style: function(feature) {
+          return {
+            fillColor: "green",
+            fillOpacity: 0.3,
+            color: "green",
+            weight: 1.0,
+            opacity: 0.7
+          };
         },
         onEachFeature: function(feature, layer) {
           layer.on('click', function(e) {
-            alert("type: " + feature.properties.TYPE_OF_WA);
+            alert("Waste Container: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
           });
         }
       }).addTo(wasteContainersLayer);  // Add to wasteContainersLayer instead of map directly
     });
 
-    // Add layers to map with control options
-    const baseLayers = {};
-    const overlays = {
-      "Zones": zonesLayer,
-      "Waste Containers": wasteContainersLayer
-    };
-
-    // Add layer control to the map
-    L.control.layers(baseLayers, overlays).addTo(map);
-
-    // Add both layers to the map by default
+    // Add layers to the map
     zonesLayer.addTo(map);
     wasteContainersLayer.addTo(map);
   </script>
-
- dd
 </body>
-
 </html>
