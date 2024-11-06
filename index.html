@@ -25,15 +25,6 @@
       top: 0px;
       bottom: 0;
     }
-
-    .popup-content {
-      padding: 5px;
-    }
-
-    .popup-content h3 {
-      margin: 0 0 10px 0;
-      color: #333;
-    }
   </style>
 </head>
 
@@ -67,8 +58,13 @@
  }).addTo(map);
 // use jquery to load GeoJSON data
 
+    // Define layers before loading data
+    const zonesLayer = L.layerGroup();
+    const wasteContainersLayer = L.layerGroup();
+
+    // Modify the zones loading to add to layer group instead of map directly
     $.getJSON("RamallahZones.json", function(RZ) {
-      const zonesLayer = L.geoJson(RZ, {
+      L.geoJson(RZ, {
         style: function(feature) {
           return {
             fillColor: "yellow",
@@ -77,24 +73,18 @@
             weight: 1.0,
             opacity: 0.7
           };
-         },
+        },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup(`
-            <div class="popup-content">
-              <h3>Zone Information</h3>
-              <b>Zone:</b> ${feature.properties.NAME_ENGLI}<br>
-              <b>Mail Code:</b> ${feature.properties.MAIL_CODE}<br>
-              ${feature.properties.DESCRIPTION ? `<b>Description:</b> ${feature.properties.DESCRIPTION}` : ''}
-            </div>
-          `);
+          layer.on('click', function(e) {
+            alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
+          });
         }
-      }).addTo(map);
+      }).addTo(zonesLayer);  // Add to layer group instead of map
     });
 
-
-    
+    // Modify the waste containers loading to add to layer group instead of map directly
     $.getJSON("wasteContainer.json", function(WC) {
-      const wasteContainersLayer = L.geoJson(WC, {
+      L.geoJson(WC, {
         pointToLayer: function(feature, latlng) {
           return L.circleMarker(latlng, {
             radius: 5,
@@ -106,19 +96,14 @@
           });
         },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup(`
-            <div class="popup-content">
-              <h3>Waste Container Details</h3>
-              <b>Type:</b> ${feature.properties.TYPE_OF_WA}<br>
-              ${feature.properties.CAPACITY ? `<b>Capacity:</b> ${feature.properties.CAPACITY}<br>` : ''}
-              ${feature.properties.CONDITION ? `<b>Condition:</b> ${feature.properties.CONDITION}` : ''}
-            </div>
-          `);
+          layer.on('click', function(e) {
+            alert("type: " + feature.properties.TYPE_OF_WA);
+          });
         }
-
-      }).addTo(map);
+      }).addTo(wasteContainersLayer);
     });
-       // Add layers to map with control options
+
+    // Add layers to map with control options
     const baseLayers = {};
     const overlays = {
       "Zones": zonesLayer,
@@ -130,7 +115,8 @@
 
     // Add both layers to the map by default
     zonesLayer.addTo(map);
-    wasteContainersLayer.addTo(map);</script>
+    wasteContainersLayer.addTo(map);
+  </script>
 
  
 </body>
