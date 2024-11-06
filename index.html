@@ -58,9 +58,12 @@
  }).addTo(map);
 // use jquery to load GeoJSON data
 
-    let zonesLayer;
+    // Define layers outside of the $.getJSON calls so they can be referenced later
+    const zonesLayer = L.layerGroup();
+    const wasteContainersLayer = L.layerGroup();
+
     $.getJSON("RamallahZones.json", function(RZ) {
-      zonesLayer = L.geoJson(RZ, {
+      L.geoJson(RZ, {
         style: function(feature) {
           return {
             fillColor: "yellow",
@@ -69,38 +72,28 @@
             weight: 1.0,
             opacity: 0.7
           };
-        },
+         },
         onEachFeature: function(feature, layer) {
           layer.on('click', function(e) {
-            alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
+             alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
           });
         }
       }).addTo(map);
     });
 
-    // Create custom icons for waste containers and dumps
+    // Create a custom icon for waste containers
     const containerIcon = L.icon({
-        iconUrl: 'path/to/waste-container-icon.png',
-        iconSize: [25, 25],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12]
+        iconUrl: 'path/to/waste-container-icon.png',  // Replace with your icon path
+        iconSize: [25, 25],  // Size of the icon in pixels
+        iconAnchor: [12, 12],  // Point of the icon which corresponds to marker's location
+        popupAnchor: [0, -12]  // Point from which popups should open relative to the iconAnchor
     });
 
-    const dumpIcon = L.icon({
-        iconUrl: 'path/to/waste-dump-icon.png',  // Replace with your dump icon path
-        iconSize: [25, 25],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12]
-    });
-
-    let wasteContainersLayer;
     $.getJSON("wasteContainer.json", function(WC) {
-      wasteContainersLayer = L.geoJson(WC, {
+      L.geoJson(WC, {
         pointToLayer: function(feature, latlng) {
-          // Choose icon based on waste type
-          const icon = feature.properties.TYPE_OF_WA === 'dump' ? dumpIcon : containerIcon;
           return L.marker(latlng, {
-            icon: icon
+            icon: containerIcon  // Use the custom icon instead of circleMarker
           });
         },
         onEachFeature: function(feature, layer) {
@@ -109,23 +102,20 @@
           });
         }
       }).addTo(map);
-
-      const baseLayers = {
-        "Dark Map": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          subdomains: 'abcd',
-          maxZoom: 20
-        }).addTo(map)
-      };
-      
-      const overlays = {
-        "Zones": zonesLayer,
-        "Waste Containers": wasteContainersLayer
-      };
-
-      // Add layer control to the map
-      L.control.layers(baseLayers, overlays).addTo(map);
     });
+       // Add layers to map with control options
+    const baseLayers = {};
+    const overlays = {
+      "Zones": zonesLayer,
+      "Waste Containers": wasteContainersLayer
+    };
+
+    // Add layer control to the map
+    L.control.layers(baseLayers, overlays).addTo(map);
+
+    // Add both layers to the map by default
+    zonesLayer.addTo(map);
+    wasteContainersLayer.addTo(map);
   </script>
 
  ddئ
