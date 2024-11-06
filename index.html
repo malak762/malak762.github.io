@@ -58,8 +58,10 @@
  }).addTo(map);
 // use jquery to load GeoJSON data
 
+    // Store the layers in variables first
+    let zonesLayer;
     $.getJSON("RamallahZones.json", function(RZ) {
-      L.geoJson(RZ, {
+      zonesLayer = L.geoJson(RZ, {
         style: function(feature) {
           return {
             fillColor: "yellow",
@@ -68,19 +70,18 @@
             weight: 1.0,
             opacity: 0.7
           };
-         },
+        },
         onEachFeature: function(feature, layer) {
           layer.on('click', function(e) {
-             alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
+            alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
           });
         }
       }).addTo(map);
     });
 
-
-    
+    let wasteContainersLayer;
     $.getJSON("wasteContainer.json", function(WC) {
-      L.geoJson(WC, {
+      wasteContainersLayer = L.geoJson(WC, {
         pointToLayer: function(feature, latlng) {
           return L.circleMarker(latlng, {
             radius: 5,
@@ -96,22 +97,19 @@
             alert("type: " + feature.properties.TYPE_OF_WA);
           });
         }
-
       }).addTo(map);
+      
+      // Move the layer controls inside the callback after layers are created
+      const baseLayers = {};
+      const overlays = {
+        "Zones": zonesLayer,
+        "Waste Containers": wasteContainersLayer
+      };
+      
+      // Add layer control to the map
+      L.control.layers(baseLayers, overlays).addTo(map);
     });
-       // Add layers to map with control options
-    const baseLayers = {};
-    const overlays = {
-      "Zones": zonesLayer,
-      "Waste Containers": wasteContainersLayer
-    };
-
-    // Add layer control to the map
-    L.control.layers(baseLayers, overlays).addTo(map);
-
-    // Add both layers to the map by default
-    zonesLayer.addTo(map);
-    wasteContainersLayer.addTo(map);</script>
+  </script>
 
  
 </body>
