@@ -58,18 +58,14 @@
  }).addTo(map);
 // use jquery to load GeoJSON data
 
-    // Define layers before loading data
-    const zonesLayer = L.layerGroup();
-    const wasteContainersLayer = L.layerGroup();
-
-    // Modify the zones loading to add to layer group instead of map directly
+    let zonesLayer;
     $.getJSON("RamallahZones.json", function(RZ) {
-      L.geoJson(RZ, {
+      zonesLayer = L.geoJson(RZ, {
         style: function(feature) {
           return {
-            fillColor: "orange",
+            fillColor: "yellow",
             fillOpacity: 0.3,
-            color: "orange",
+            color: "yellow",
             weight: 1.0,
             opacity: 0.7
           };
@@ -79,20 +75,23 @@
             alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
           });
         }
-      }).addTo(zonesLayer);  // Add to layer group instead of map
+      }).addTo(map);
     });
 
-    // Modify the waste containers loading to add to layer group instead of map directly
+    // Create a custom icon for waste containers
+    const containerIcon = L.icon({
+        iconUrl: 'path/to/waste-container-icon.png',  // Replace with your icon path
+        iconSize: [25, 25],  // Size of the icon in pixels
+        iconAnchor: [12, 12],  // Point of the icon which corresponds to marker's location
+        popupAnchor: [0, -12]  // Point from which popups should open relative to the iconAnchor
+    });
+
+    let wasteContainersLayer;
     $.getJSON("wasteContainer.json", function(WC) {
-      L.geoJson(WC, {
+      wasteContainersLayer = L.geoJson(WC, {
         pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: "orange",
-            color: "orange",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
+          return L.marker(latlng, {
+            icon: containerIcon
           });
         },
         onEachFeature: function(feature, layer) {
@@ -100,25 +99,27 @@
             alert("type: " + feature.properties.TYPE_OF_WA);
           });
         }
-      }).addTo(wasteContainersLayer);
+      }).addTo(map);
+
+      const baseLayers = {
+        "Dark Map": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 20
+        }).addTo(map)
+      };
+      
+      const overlays = {
+        "Zones": zonesLayer,
+        "Waste Containers": wasteContainersLayer
+      };
+
+      // Add layer control to the map
+      L.control.layers(baseLayers, overlays).addTo(map);
     });
-
-    // Add layers to map with control options
-    const baseLayers = {};
-    const overlays = {
-      "Zones": zonesLayer,
-      "Waste Containers": wasteContainersLayer
-    };
-
-    // Add layer control to the map
-    L.control.layers(baseLayers, overlays).addTo(map);
-
-    // Add both layers to the map by default
-    zonesLayer.addTo(map);
-    wasteContainersLayer.addTo(map);
   </script>
 
- 
+ ddئ
 </body>
 
 </html>
