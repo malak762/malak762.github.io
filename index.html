@@ -220,6 +220,7 @@
       <li><button onclick="window.open('https://facebook.com', '_blank')">Facebook</button></li>
       <li><button onclick="window.open('https://instagram.com', '_blank')">Instagram</button></li>
       <li><button onclick="window.open('https://telegram.org', '_blank')">Telegram</button></li>
+      <li><button onclick="shareContent()">Share</button></li>
     </ul>
   </nav>
 
@@ -365,6 +366,21 @@
     forgotPasswordLink.onclick = function(e) {
       e.preventDefault();
       alert('Password reset link will be sent to your email');
+    }
+
+    // Add share functionality
+    function shareContent() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Ramallah Waste Containers',
+          text: 'Check out this map of waste containers in Ramallah!',
+          url: window.location.href
+        })
+        .then(() => console.log('Successfully shared'))
+        .catch((error) => console.log('Error sharing:', error));
+      } else {
+        alert('Web Share API is not supported in your browser. You can copy the URL manually.');
+      }
     }
   </script>
 
