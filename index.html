@@ -148,31 +148,10 @@
     .login-btn:hover {
       background: #e66e00;
     }
-
-    /* Dark mode styles */
-    body.dark-mode {
-      background-color: #121212;
-      color: #ffffff;
-    }
-
-    .navbar.dark-mode {
-      background-color: #333333;
-    }
-
-    .logo.dark-mode {
-      color: #ffffff;
-    }
-
-    #map.dark-mode {
-      filter: invert(1) hue-rotate(180deg);
-    }
   </style>
 </head>
 
 <body>
-  <!-- Add a button for toggling dark mode -->
-  <button id="darkModeToggle" style="position: fixed; bottom: 10px; right: 10px; z-index: 1001;">Toggle Dark Mode</button>
-
   <!-- Add login overlay before navbar -->
   <div class="login-overlay">
     <div class="login-container">
@@ -194,7 +173,11 @@
   <!-- Add navbar before map div -->
   <nav class="navbar">
     <a href="#" class="logo">Distribution of Waste Dumps In Ramallah</a>
-    <a href="#" class="create-account" style="color: white; margin-left: 20px;">Create an Account</a>
+    <ul style="list-style: none; display: inline; margin-left: 20px;">
+      <li style="display: inline; margin-right: 10px;">
+        <a href="account_creation.html" style="color: white; text-decoration: none;">Create Account</a>
+      </li>
+    </ul>
   </nav>
 
   <!-- the map -->
@@ -297,17 +280,6 @@
         document.querySelector('.login-overlay').style.display = 'none';
       }
     });
-
-    // Function to toggle dark mode
-    const toggleDarkMode = () => {
-      document.body.classList.toggle('dark-mode');
-      document.querySelector('.navbar').classList.toggle('dark-mode');
-      document.querySelector('.logo').classList.toggle('dark-mode');
-      document.getElementById('map').classList.toggle('dark-mode');
-    };
-
-    // Add event listener to the button
-    document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
   </script>
 
  
