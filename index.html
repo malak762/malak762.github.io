@@ -1,21 +1,152 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang="en"></html>
+
 <head>
   <meta charset="utf-8" />
-  <title>Ramallah Waste Containers</title>
+
+  <!-- Give the page a title -->
+  <title>Distribution of Waste Dumps In Ramallah</title>
+
+  <!-- Add a link to the Leaflet CSS library so you can reference it for styling your map -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+
+  <!-- All the CSS code goes inside the style tags below -->
   <style>
+    /* style the body */
     body {
       margin: 0px;
       height: 100%;
       width: 100%;
     }
 
+    /* style the map */
     #map {
       position: absolute;
       width: 100%;
-      top: 0px;
+      top: 60px;
       bottom: 0;
+    }
+
+    /* Add navbar styles */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #ff7b00;
+      padding: 1rem 2rem;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      color: white;
+      font-family: 'Arial', sans-serif;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .logo::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background-color: white;
+      transition: width 0.3s ease;
+    }
+
+    .logo:hover::after {
+      width: 100%;
+    }
+
+    /* Add login overlay styles */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .login-container h2 {
+      color: #ff7b00;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #ff7b00;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: #ff7b00;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .login-btn:hover {
+      background: #e66e00;
     }
 
     /* Dark mode styles */
@@ -40,30 +171,67 @@
 
 <body>
   <!-- Add a button for toggling dark mode -->
-  <button id="darkModeToggle" style="position: fixed; top: 10px; right: 10px; z-index: 1001;">Toggle Dark Mode</button>
+  <button id="darkModeToggle" style="position: fixed; bottom: 10px; right: 10px; z-index: 1001;">Toggle Dark Mode</button>
+
+  <!-- Add login overlay before navbar -->
+  <div class="login-overlay">
+    <div class="login-container">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add navbar before map div -->
+  <nav class="navbar">
+    <a href="#" class="logo">Distribution of Waste Dumps In Ramallah</a>
+  </nav>
 
   <!-- the map -->
   <div id="map"></div>
 
+  <!-- Add a link to the Leaflet JavaScript library so you can reference it for building your map -->
   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+
+  <!-- Add a link to the jQuery JavaScript library so you can leverage ajax methods to load your data -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- All JavaScript goes inside the script tags below -->
   <script>
+    // define map options
     const mapOptions = {
-      zoomSnap: 0.5,
-      center: [31.9045, 35.2045],
-      zoom: 17.5,
+      zoomSnap: 0.5,  // this allows fractional zooming
+      center: [31.9045, 35.2045], // center the map on the coordinates for Ramallah
+      zoom: 17.5, // set the initial zoom
     };
 
+    // define the map with the options above
     const map = L.map("map", mapOptions);
+   
+   // add a base map to the map
+   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+   subdomains: 'abcd',
+   maxZoom: 20
+ }).addTo(map);
+// use jquery to load GeoJSON data
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
-    }).addTo(map);
+    // Define layers before loading data
+    const zonesLayer = L.layerGroup();
+    const wasteContainersLayer = L.layerGroup();
 
+    // Modify the zones loading to add to layer group instead of map directly
     $.getJSON("RamallahZones.json", function(RZ) {
-      const zonesLayer = L.geoJson(RZ, {
+      L.geoJson(RZ, {
         style: function(feature) {
           return {
             fillColor: "yellow",
@@ -78,11 +246,12 @@
             alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
           });
         }
-      }).addTo(map);
+      }).addTo(zonesLayer);  // Add to layer group instead of map
     });
 
+    // Modify the waste containers loading to add to layer group instead of map directly
     $.getJSON("wasteContainer.json", function(WC) {
-      const wasteContainersLayer = L.geoJson(WC, {
+      L.geoJson(WC, {
         pointToLayer: function(feature, latlng) {
           return L.circleMarker(latlng, {
             radius: 5,
@@ -98,15 +267,94 @@
             alert("type: " + feature.properties.TYPE_OF_WA);
           });
         }
-      }).addTo(map);
+      }).addTo(wasteContainersLayer);
     });
 
+    // Add layers to map with control options
+    const baseLayers = {};
+    const overlays = {
+      "Zones": zonesLayer,
+      "Waste Containers": wasteContainersLayer
+    };
+
+    // Add layer control to the map
+    L.control.layers(baseLayers, overlays).addTo(map);
+
+    // Add both layers to the map by default
+    zonesLayer.addTo(map);
+    wasteContainersLayer.addTo(map);
+
+    // Add login functionality
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      // Add your authentication logic here
+      // For demo purposes, we'll just hide the overlay
+      if (username && password) {
+        document.querySelector('.login-overlay').style.display = 'none';
+      }
+    });
+
+    // Function to toggle dark mode
     const toggleDarkMode = () => {
       document.body.classList.toggle('dark-mode');
+      document.querySelector('.navbar').classList.toggle('dark-mode');
+      document.querySelector('.logo').classList.toggle('dark-mode');
       document.getElementById('map').classList.toggle('dark-mode');
     };
 
+    // Add event listener to the button
     document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
   </script>
+
+ 
 </body>
+
+
 </html>
+
+<html>
+<head>
+    <!-- ... existing code ... -->
+    <style>
+      /* ... existing styles ... */
+  
+      /* Dark mode styles */
+      body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+      }
+  
+      .navbar.dark-mode {
+        background-color: #333333;
+      }
+  
+      .logo.dark-mode {
+        color: #ffffff;
+      }
+  
+      #map.dark-mode {
+        filter: invert(1) hue-rotate(180deg);
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Add a button for toggling dark mode -->
+    <button id="darkModeToggle" style="position: fixed; bottom: 10px; right: 10px; z-index: 1001;">Toggle Dark Mode</button>
+  
+    <!-- ... existing code ... -->
+  
+    <script>
+      // ... existing code ...
+  
+      // Function to toggle dark mode
+      const toggleDarkMode = () => {
+        document.body.classList.toggle('dark-mode');
+        document.querySelector('.navbar').classList.toggle('dark-mode');
+        document.querySelector('.logo').classList.toggle('dark-mode');
+        document.getElementById('map').classList.toggle('dark-mode');
+      };
+  
