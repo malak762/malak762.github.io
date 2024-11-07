@@ -133,6 +133,75 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+
+    /* Add modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1002;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+
+    .modal-content.dark-mode {
+      background-color: #2c2c2c;
+      color: white;
+    }
+
+    .close {
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .forgot-password {
+      color: #2c3e50;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+
+    .forgot-password.dark-mode {
+      color: #ecf0f1;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background-color: #34495e;
+    }
   </style>
 </head>
 
@@ -152,6 +221,26 @@
       <li><button onclick="window.open('https://telegram.org', '_blank')">Telegram</button></li>
     </ul>
   </nav>
+
+  <!-- Add modal HTML after navbar -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <input type="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" placeholder="Password" required>
+        </div>
+        <div class="form-group">
+          <a href="#" class="forgot-password" id="forgotPassword">Forgot Password?</a>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+    </div>
+  </div>
 
   <!-- the map -->
   <div id="map"></div>
@@ -251,6 +340,31 @@
 
     // Add event listener to the button
     document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+
+    // Add login modal functionality
+    const modal = document.getElementById('loginModal');
+    const loginBtn = document.querySelector('.navbar button');
+    const closeBtn = document.querySelector('.close');
+    const forgotPasswordLink = document.getElementById('forgotPassword');
+
+    loginBtn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    closeBtn.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    forgotPasswordLink.onclick = function(e) {
+      e.preventDefault();
+      alert('Password reset link will be sent to your email');
+    }
   </script>
 
  
