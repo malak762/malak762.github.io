@@ -22,68 +22,52 @@
     #map {
       position: absolute;
       width: 100%;
-      top: 0px;
+      top: 60px;
       bottom: 0;
     }
-            body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .header {
-            background-color: #007BFF; /* لون أزرق */
-            color: white;
-            padding:40px;
-            display: flex;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            
-        }
-        .header img {
-            max-height: 40px; /* حجم الصورة */
-            margin-right: 100px;
-        }
-         .header h1 {
-            margin: 0;
-        }
-        .content {
-            padding-top: 120px; /* إضافة مساحة كافية أعلى المحتوى لتجنب التداخل مع الهيدر الثابت */
-        }
-    
-</head>
-    <body>
-        <div class="header">
-        <img src="https://www.marefa.org/w/images/thumb/1/16/Birzeit_University_logo.svg/600px-Birzeit_University_logo.svg.png" alt="Birzeit University Logo">
-        <h1>Mapping Emergency Centers in Ramallah city</h1>
-    </div>
-    <div class="content">
-    <!-- Map container -->
-    <div id="map"></div>
-    
+
+    /* Add navbar styles */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #ff7700;
+      padding: 1rem 2rem;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      color: white;
+      font-family: 'Arial', sans-serif;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .logo::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background-color: white;
+      transition: width 0.3s ease;
+    }
+
+    .logo:hover::after {
+      width: 100%;
+    }
   </style>
 </head>
 
 <body>
-
-     <div class="header">
-        <img src="https://www.marefa.org/w/images/thumb/1/16/Birzeit_University_logo.svg/600px-Birzeit_University_logo.svg.png" alt="Birzeit University Logo">
-        <h1>Mapping Emergency Centers in Ramallah city</h1>
-    </div>
-    <div class="content">
-    <!-- Map container -->
-    <div id="map"></div>
-    
-    <!-- North arrow control -->
-    <div class="leaflet-control-northarrow" title="North"></div>
-    
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h3>Categories</h3>
-            <p>Mapping Emergency Centers in Ramallah city</p>
-        </div>
+  <!-- Add navbar before map div -->
+  <nav class="navbar">
+    <a href="#" class="logo">Ramallah Waste Management</a>
+  </nav>
 
   <!-- the map -->
   <div id="map"></div>
@@ -114,20 +98,6 @@
  }).addTo(map);
 // use jquery to load GeoJSON data
 
-    // Create a custom icon for waste containers
-    const containerIcon = L.icon({
-        iconUrl: 'https://www.google.com/imgres?imgurl=https://png.pngtree.com/png-vector/20190319/ourlarge/pngtree-vector-waste-icon-png-image_845940.jpg&tbnid=q3SxkTxj1LHzNM&vet=1&imgrefurl=https://ar.pngtree.com/freepng/vector-waste-icon_4140897.html&docid=powM5Zl1ugiIFM&w=640&h=640&source=sh/x/im/m1/1&kgs=2fc9c6ffa030e0c8&shem=abme,trie',  // Using a green marker as an example
-       
-        iconSize: [25, 41],  // Standard Leaflet marker size
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
-
-    // Define layers before loading data
-    const zonesLayer = L.layerGroup();
-    const wasteContainersLayer = L.layerGroup();
-
     $.getJSON("RamallahZones.json", function(RZ) {
       L.geoJson(RZ, {
         style: function(feature) {
@@ -138,37 +108,52 @@
             weight: 1.0,
             opacity: 0.7
           };
-        },
+         },
         onEachFeature: function(feature, layer) {
           layer.on('click', function(e) {
-            alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
+             alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
           });
         }
-      }).addTo(zonesLayer);  // Add to zonesLayer instead of map directly
+      }).addTo(map);
     });
 
+
+    
     $.getJSON("wasteContainer.json", function(WC) {
       L.geoJson(WC, {
-        style: function(feature) {
-          return {
-            fillColor: "green",
-            fillOpacity: 0.3,
-            color: "green",
-            weight: 1.0,
-            opacity: 0.7
-          };
+        pointToLayer: function(feature, latlng) {
+          return L.circleMarker(latlng, {
+            radius: 5,
+            fillColor: "orange",
+            color: "orange",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+          });
         },
         onEachFeature: function(feature, layer) {
           layer.on('click', function(e) {
-            alert("Waste Container: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
+            alert("type: " + feature.properties.TYPE_OF_WA);
           });
         }
-      }).addTo(wasteContainersLayer);  // Add to wasteContainersLayer instead of map directly
-    });
 
-    // Add layers to the map
+      }).addTo(map);
+    });
+       // Add layers to map with control options
+    const baseLayers = {};
+    const overlays = {
+      "Zones": zonesLayer,
+      "Waste Containers": wasteContainersLayer
+    };
+
+    // Add layer control to the map
+    L.control.layers(baseLayers, overlays).addTo(map);
+
+    // Add both layers to the map by default
     zonesLayer.addTo(map);
-    wasteContainersLayer.addTo(map);
-  </script>
+    wasteContainersLayer.addTo(map);</script>
+
+ 
 </body>
+ 
 </html>
