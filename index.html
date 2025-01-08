@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <title>مشروع خريطة الأسواق التقليدية</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: url('https://via.placeholder.com/1920x1080') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .welcome-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+    .welcome-box {
+      padding: 20px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.8);
+    }
+    .welcome-box h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+    .welcome-box p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    .welcome-box button {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      color: white;
+      background: #ff4500;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .welcome-box button:hover {
+      background: #e63900;
+    }
+    .welcome-box .instructions-button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1em;
+      color: white;
+      background: #007BFF;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .welcome-box .instructions-button:hover {
+      background: #0056b3;
+    }
+    .map-image {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      border: 5px solid white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      max-width: 30%;
+    }
+  </style>
+</head>
+<body>
+  <img src="pal.jpg" alt="خريطة فلسطين" class="map-image">
+  <div class="welcome-container">
+    <div class="welcome-box">
+      <h1>مرحبًا بكم في خريطة الأسواق التقليدية</h1>
+      <p>استكشف الأسواق الفلسطينية التقليدية وتعرف على تاريخها العريق.</p>
+      <button onclick="enterMap()">ابدأ الآن</button>
+<button onclick="enterMap2()">انجليزي</button>
+      <button class="instructions-button" onclick="showInstructions()">الإرشادات للسائح</button>
+    </div>
+  </div>
+
+  <script>
+    function enterMap() {
+      window.location.href = "file:///C:/Users/sbarghouthi.MAIL-SRV/Downloads/finaaaaal/index%20-%20Copy.html";
+    }
+  function enterMap2() {
+      window.location.href = "file:///C:/Users/sbarghouthi.MAIL-SRV/Downloads/finaaaaal/index%20-eng.html";
+    }
+
+    function showInstructions() {
+      alert("مرحبًا بالسائح!\n\n1. تصفح الخريطة لاستكشاف مواقع الأسواق التقليدية.\n2. انقر على أي سوق لمعرفة التفاصيل بما في ذلك الصور وساعات العمل.\n3. استمتع بالجولات التفاعلية والمعلومات التاريخية لكل سوق.\n4. استخدم ميزة البحث للوصول بسرعة إلى السوق الذي تبحث عنه.\n5. إذا كان لديك اقتراح أو استفسار، لا تتردد في التواصل عبر صندوق الاقتراحات.");
+    }
+  </script>
+</body>
+</html>
